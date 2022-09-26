@@ -1,0 +1,81 @@
+select*from Bolgeler;
+select*from Varliklar;
+select*from VarlikKategorileri;
+select*from Sehirler cross join Bolgeler;
+select*from VarlikKategorileri cross join Bolgeler;
+insert into Sehirler (Plaka,Sehir,Bolge) values (99,'Deneme',7);
+insert into Sehirler (Plaka,Sehir,Bolge) values (34,'İstanbul',8); --UNIQUE tekil hale dönüştürme.Tanımladığı kolonu tekil yapar,ilgili kolonda yer alan verileri tekrar başka bir satırda tekrarlanmasının önüne geçer.
+alter table Sehirler add constraint PlakaTekilOlsun unique(Plaka);
+select*from Sehirler where Plaka=34;
+delete from Sehirler where tekil=51;
+select*from Sehirler order by Plaka;
+
+select Plaka from Sehirler group by Plaka order by Plaka;
+
+select Plaka, count (Plaka) from Sehirler group by Plaka order by Plaka;
+
+select Plaka,count (Plaka) From Sehirler Group by Plaka
+Having count (Plaka)>1 order by Plaka;
+
+select*from Sehirler where Plaka in(1,34);
+
+select*from Sehirler where Plaka in(select Plaka from Sehirler group by Plaka having count (Plaka)>1 );
+
+alter table Sehirler add constraint PlakaTekilOlsun unique(Plaka);
+
+--Primary key - Birincil Anahtar
+--1 Tanımlandığı kolona unique tanımı yapar.
+--2 tabloyu order by kullanmadan select ettiğimizde tanımlanan kolona göre tablo a-z (küçükten büyüğe) sıralı olarak listeler
+alter table Sehirler add constraint pk_Sehirler_Sehir_Efe primary key (Sehir);
+alter table Sehirler add constraint pk_Sehirler_Sehir_Feridun primary key (Sehir);
+
+--check tanımlanan veri alanına (data field-Kolon) girilecek verinin belirlenen kısıt doğrultusunda girilmesini sağlar.
+alter table Sehirler add constraint chk_Sehirler_Plaka_1_81_Arasi_Olsun Check (Plaka>=1 And Plaka <=81);
+
+select*from Sehirler where Plaka>81;
+delete from Sehirler where Plaka >81;
+insert into Sehirler values(100,'Yüz',6,3);
+insert into Sehirler values(20,'Denizli',0,2);
+
+create table Kullanicilar
+(
+id smallint identity(1,1),Eposta varchar(30) not null,AdSoyad varchar(50) null,Sifre varchar(30) not null,Cinsiyet char(1) not null
+);
+alter table Kullanicilar add constraint chk_Kull_Cinsiyet_EveyaK_Zorunlulugu check (Cinsiyet='E' or Cinsiyet='K');
+
+
+insert into Kullanicilar values('efe@gmail.com','Furkan Engin','fe','E');
+
+select*from VarlikKategorileri;
+alter table VarlikKategorileri add constraint chk_VKategorileri_TurKodu_TurkceKarakterOlmasin check (TurKodu not in ('Ç','ç','Ğ','ğ','İ','ı','Ö','ö','Ş','ş','Ü','ü'));
+insert into VarlikKategorileri values ('Ş','Dünya Harikaları');
+insert into VarlikKategorileri values ('H','Dünya Harikaları');
+
+select*from Varliklar;
+alter table Varliklar add constraint VarlikNoTekil unique(VarlikNo);
+alter table Varliklar add constraint VarlikAdiTekil unique(VarlikAdi);
+
+select*from Kullanicilar;
+alter table Kullanicilar add yas  tinyint not null;
+alter table Kullanicilar add constraint chk_Kullanicilar_Yas_18_130_Arasi_Olsun Check (yas>=18 And yas <=130);
+insert into Kullanicilar values('yigit@gmail.com','Yigit Engin','Ye','E',20); 
+
+--Bu aşamadan sonrası vizeye dahil değil--
+Select*from Sehirler;
+select*from Bolgeler;
+--relatıonal- ilişkisel (Tablolar arasındaki bağlara ilişkisel model)
+--foreign key-- yabancı anahtar
+alter table Sehirler add constraint fk_Sehirler_Bolge foreign key (Bolge) references Bolgeler(BolgeKodu);
+--Şehirler tablosundaki bölge kolonu içine girilecek veriler kesinlikle bölgeler tablosundaki BolgeKodu kolonunda yer almalı.Referansı Bolgeler tablosundaki BolgeKodu
+--Yabancı anahtar tanımlaması yapılıyorsa referans alınan kolon kesinlikle tekil olmalı ya unique olacak ya primarykey olmak zorunda.
+Alter table Bolgeler add constraint u_Bolgeler_BolgeKodu unique(BolgeKodu);
+
+select*from Sehirler left outer join Bolgeler on Sehirler.Bolge=Bolgeler.BolgeKodu where BolgeKodu is null;
+
+
+update Sehirler set Bolge=2 Where Plaka in(9,48);
+update Sehirler set Bolge=1 Where Plaka in(22);
+update Sehirler set Bolge=3 Where Plaka in(33);
+update Sehirler set Bolge=7 Where Plaka in(23);
+insert into Sehirler values (16,'Bursa',0,1);
+
